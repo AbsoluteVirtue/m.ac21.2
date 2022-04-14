@@ -6,7 +6,7 @@ from controllers import base
 
 
 def setup_routes(app):
-    app.router.add_view(r'/', handler=base.Servers)
+    app.router.add_view(r'/', handler=base.Base)
 
 
 async def close_session(app):
@@ -16,7 +16,7 @@ async def close_session(app):
 def get_config(path):
     config_file = os.path.abspath(path)
     with open(config_file) as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
 
     return config
 
