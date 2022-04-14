@@ -45,6 +45,3 @@ jobs:
         
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-        
-      - name: Test
-        run: python discr.py --key test --val passed
