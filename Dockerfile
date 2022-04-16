@@ -6,6 +6,8 @@ FROM python:3.8-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# RUN apk add --no-cache gcc musl-dev linux-headers
+
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
@@ -19,7 +21,5 @@ EXPOSE 2022
 # For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
 RUN adduser -u 2022 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
-
-CMD ["python", "test.py"]
 
 ENTRYPOINT ["python", "discr.py"]
