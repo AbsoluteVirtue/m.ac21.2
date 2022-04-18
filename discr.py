@@ -1,12 +1,30 @@
 import argparse
+import asyncio
 import os.path
+
+import motor.motor_asyncio as aiomotor
+
 import yaml
 from aiohttp import web
 from controllers import base
 
 
+async def setup_mongo(app, loop):
+    mgo = aiomotor.AsyncIOMotorClient(
+        io_loop=loop, **app['config']['mongo']['kwargs'])[app['config']['mongo']['db']]
+
+    async def close_mongo():
+        mgo.client.close()
+
+    app.on_cleanup.append(close_mongo)
+
+    return mgo
+
+
 def setup_routes(app):
-    app.router.add_view(r'/', handler=base.Base)
+    app.router.add_view(r'/', name='home', handler=base.Base)
+    app.router.add_view(r'/user/{username:[a-f0-9]{4,16}\Z}', name='user.id', handler=base.User)
+    app.router.add_view(r'/user', name='user', handler=base.User)
 
 
 async def close_session(app):
@@ -16,22 +34,25 @@ async def close_session(app):
 def get_config(path):
     config_file = os.path.abspath(path)
     with open(config_file) as f:
-        config = yaml.safe_load(f)
-
-    return config
+        return yaml.safe_load(f)
 
 
-if __name__ == '__main__':
-    app = web.Application()
-
-    parser = argparse.ArgumentParser(description='Process arguments.')
-    parser.add_argument('--config_file', dest='config_file', default='./config/local.yaml', help='config file path')
-
-    path = parser.parse_args().config_file
-
-    app['config'] = get_config(path)
+async def make_app(config):
+    loop = asyncio.get_event_loop()
+    app = web.Application(loop=loop)
+    app['config'] = config
+    app['db'] = await setup_mongo(app, loop)
 
     setup_routes(app)
 
-    web.run_app(app, host=app['config']['host'], port=app['config']['port'],
+    return app
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Process arguments.')
+    parser.add_argument('--config_file', dest='config_file', default='./config/local.yaml', help='config file path')
+
+    config = get_config(parser.parse_args().config_file)
+
+    web.run_app(make_app(config), host=config['host'], port=config['port'],
                 access_log_format='%t "%r" %s %Tf ms -ip:"%a" -ref:"%{Referer}i"')

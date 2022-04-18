@@ -2,3 +2,16 @@ debug: true
 
 host: 127.0.0.1
 port: 2022
+
+mongo:
+  kwargs:
+    host: 127.0.0.1:27017
+    maxPoolSize: 5
+    readpreference: primaryPreferred
+    w: majority
+    j: true
+    tz_aware: true
+    socketTimeoutMS: 10000
+    connectTimeoutMS: 5000
+    waitQueueTimeoutMS: 5000
+  db: pis_auth
