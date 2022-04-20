@@ -1,8 +1,10 @@
 GET http://127.0.0.1:2022/ HTTP/1.1
 content-type: application/json
 
+
 GET http://127.0.0.1:2022/user/ivan HTTP/1.1
 content-type: application/json
+
 
 POST http://127.0.0.1:2022/user HTTP/1.1
 content-type: application/json
@@ -12,6 +14,7 @@ content-type: application/json
     "email": "john.doe@example.com",
 }
 
+
 PATCH http://127.0.0.1:2022/user HTTP/1.1
 content-type: application/json
 
@@ -19,6 +22,7 @@ content-type: application/json
     "username": "ivan",
     "email": "doe.john@example.com",
 }
+
 
 DELETE http://127.0.0.1:2022/user HTTP/1.1
 content-type: application/json
