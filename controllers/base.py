@@ -2,18 +2,19 @@ from aiohttp import web
 
 from store import mgo as datastore
 
+
 class Base(web.View):
 
     async def get(self):
         return web.json_response({
             "success": True,
-            "routes": {
-                "user": {
+            "res": {
+                "get_user": {
                     "methods": ["GET"],
                     "path": (
                         f"{self.request.scheme}://{self.request.host}{self.request.app.router['user'].canonical}"),
                 },
-                "modify": {
+                "modify_user": {
                     "methods": ["POST", "PATCH", "DELETE"],
                     "path": (
                         f"{self.request.scheme}://{self.request.host}{self.request.app.router['user.id'].canonical}"),

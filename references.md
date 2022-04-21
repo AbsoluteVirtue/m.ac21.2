@@ -25,6 +25,10 @@ https://github.com/aliev/aioauth-fastapi/tree/master/aioauth_fastapi_demo
 
 https://developers.google.com/identity/protocols/oauth2
 
+# Security
+https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+https://pages.nist.gov/800-63-3/sp800-63b.html
+
 # Docker
 https://docs.docker.com/ci-cd/best-practices/
 https://code.visualstudio.com/docs/containers/quickstart-python
