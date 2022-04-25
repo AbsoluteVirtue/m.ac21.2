@@ -101,3 +101,7 @@ where: -f "force stop"
     docker image history (--no-trunc) getting-started
 
 --no-trunc is optional
+
+# Testing
+curl -d '{"username":"value1", "email":"value2"}' -H "Content-Type: application/json" -X POST http://localhost:2022/u
+ser

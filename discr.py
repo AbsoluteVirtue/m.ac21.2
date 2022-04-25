@@ -23,7 +23,7 @@ async def setup_mongo(app, loop):
 
 def setup_routes(app):
     app.router.add_view(r'/', name='home', handler=base.Base)
-    app.router.add_view(r'/user/{username:[a-f0-9]{4,16}\Z}', name='user.id', handler=base.User)
+    app.router.add_view(r'/user/{username}', name='user-id', handler=base.User)
     app.router.add_view(r'/user', name='user', handler=base.User)
 
 

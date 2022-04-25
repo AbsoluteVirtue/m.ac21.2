@@ -1,32 +1,28 @@
 GET http://127.0.0.1:2022/ HTTP/1.1
-content-type: application/json
 
+###
+GET http://127.0.0.1:2022/user HTTP/1.1
 
+###
 GET http://127.0.0.1:2022/user/ivan HTTP/1.1
-content-type: application/json
 
-
+###
 POST http://127.0.0.1:2022/user HTTP/1.1
-content-type: application/json
+Accept: */*
+Content-Type: application/json
 
-{
-    "username": "ivan",
-    "email": "john.doe@example.com",
-}
+{"username": "test", "email": "test@example.com"}
 
-
+###
 PATCH http://127.0.0.1:2022/user HTTP/1.1
-content-type: application/json
+Accept: */*
+Content-Type: application/json
 
-{
-    "username": "ivan",
-    "email": "doe.john@example.com",
-}
+{"username": "test", "email": "test@example.com"}
 
-
+###
 DELETE http://127.0.0.1:2022/user HTTP/1.1
-content-type: application/json
+Accept: */*
+Content-Type: application/json
 
-{
-    "username": "JohnDoe",
-}
+{"username": "ivan"}

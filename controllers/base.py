@@ -1,3 +1,4 @@
+from pickle import NONE
 from aiohttp import web
 
 from store import mgo as datastore
@@ -9,15 +10,15 @@ class Base(web.View):
         return web.json_response({
             "success": True,
             "res": {
-                "get_user": {
-                    "methods": ["GET"],
-                    "path": (
-                        f"{self.request.scheme}://{self.request.host}{self.request.app.router['user'].canonical}"),
-                },
                 "modify_user": {
                     "methods": ["POST", "PATCH", "DELETE"],
                     "path": (
-                        f"{self.request.scheme}://{self.request.host}{self.request.app.router['user.id'].canonical}"),
+                        f"{self.request.scheme}://{self.request.host}{self.request.app.router['user'].canonical}"),
+                },
+                "get_user": {
+                    "methods": ["GET"],
+                    "path": (
+                        f"{self.request.scheme}://{self.request.host}{self.request.app.router['user-id'].canonical}"),
                 },
             },
         })
@@ -26,7 +27,11 @@ class Base(web.View):
 class User(web.View):
 
     async def get(self):
-        user = await datastore.get_user(self.request.app['db'], self.request.match_info['username'])
+        username = self.request.match_info.get('username', None)
+        if not username:
+            raise web.HTTPBadRequest
+
+        user = await datastore.get_user(self.request.app['db'], username)
         return web.json_response({
             "success": True if user else False,
             "res": user or {},
@@ -34,7 +39,7 @@ class User(web.View):
 
     async def post(self):
         res = None
-        form = await self.request.post()
+        form = await self.request.json()
         if (form.get('username')
             and form.get('email')
         ):
@@ -45,12 +50,15 @@ class User(web.View):
 
         return web.json_response({
             "success": True if res else False,
-            "res": res or {},
+            "res": {
+                "uid": res.inserted_id,
+                "hpw": "123",
+            } if res else {},
         })
 
     async def patch(self):
         res = None
-        form = await self.request.post()
+        form = await self.request.json()
         if (form and form.get('username')):
             res = await datastore.update_user(self.request.app['db'], **{
                 'username': form['username'],
@@ -58,20 +66,21 @@ class User(web.View):
             })
 
         return web.json_response({
-            "success": True if res else False,
-            "res": res or {},
+            "success": True if res and res.modified_count else False,
+            "res": {
+                "uid": form['username'],
+            } if res and res.matched_count else {},
         })
 
     async def delete(self):
         res = None
-        form = await self.request.post()
+        form = await self.request.json()
         if (form.get('username')):
-            res = await datastore.update_user(self.request.app['db'], **{
-                'username': form['username'],
-                '_inactive_': True,
-            })
+            res = await datastore.remove_user(self.request.app['db'], **form)
 
         return web.json_response({
-            "success": True if res else False,
-            "res": res or {},
+            "success": True if res and res.deleted_count else False,
+            "res": {
+                "uid": form['username'],
+            } if res and res.deleted_count else {},
         })
