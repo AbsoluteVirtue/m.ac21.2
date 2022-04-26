@@ -1,7 +1,8 @@
-from pickle import NONE
+import os
 from aiohttp import web
 
 from store import mgo as datastore
+from utils import enc_cryptography as crypt, gen_hashlib as gen
 
 
 class Base(web.View):
@@ -42,17 +43,20 @@ class User(web.View):
         form = await self.request.json()
         if (form.get('username')
             and form.get('email')
+            and form.get('plaintext')
         ):
-            res = await datastore.insert_user(self.request.app['db'], **{
-                'username': form['username'],
-                'email': form['email'],
+            salt = os.urandom(256)
+            form.update({
+                "hash": gen.encrypt(form.pop('plaintext'), salt),
+                "key": crypt.encrypt(salt).decode("utf-8")
             })
+            res = await datastore.insert_user(self.request.app['db'], **form)
 
         return web.json_response({
             "success": True if res else False,
             "res": {
                 "uid": res.inserted_id,
-                "hpw": "123",
+                "hpw": form["hash"],
             } if res else {},
         })
 
