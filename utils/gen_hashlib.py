@@ -11,5 +11,5 @@ def encrypt(plaintext, salt_bytes):
     return h.hexdigest()
 
 
-def verify(plaintext, stored_salt, stored_hash):
-    return hmac.compare_digest(stored_hash, encrypt(plaintext, stored_salt.encode("utf-8")))
+def verify(plaintext, stored_salt_bytes, stored_hash):
+    return hmac.compare_digest(stored_hash, encrypt(plaintext, stored_salt_bytes))

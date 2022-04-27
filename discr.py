@@ -25,6 +25,7 @@ def setup_routes(app):
     app.router.add_view(r'/', name='home', handler=base.Base)
     app.router.add_view(r'/user/{username}', name='user-id', handler=base.User)
     app.router.add_view(r'/user', name='user', handler=base.User)
+    app.router.add_view(r'/auth', name='auth', handler=base.Auth)
 
 
 async def close_session(app):

@@ -8,5 +8,5 @@ def encrypt(plainbytes):
     return Fernet(_KEY).encrypt(plainbytes)
 
 
-def decrypt(hash):
-    return Fernet(_KEY).decrypt(hash).decode("utf-8")
+def decrypt(hashbytes):
+    return Fernet(_KEY).decrypt(hashbytes)

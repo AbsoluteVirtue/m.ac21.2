@@ -21,6 +21,33 @@ response
         }
     }
 
+## Authenticate user
+request
+
+    POST /auth
+    {
+        "email": "john.doe@example.com",
+        "plaintext": "qwerty1234"
+    }
+
+response
+
+    {
+        "success": true,
+        "res": {
+            "uid": "ivan"
+        }
+    }
+
+or
+
+    {
+        "success": false,
+        "res": {
+            "reason": "provided user data incomplete or incorrect"
+        }
+    }
+
 ## Add user account
 request
 
@@ -29,7 +56,7 @@ request
         "username": "ivan",
         "plaintext": "qwerty1234"
         "email": "john.doe@example.com",
-        "roles": ["admin", "mod"]
+        "roles": ["admin", "mod", "reg"]
     }
 
 response
@@ -37,7 +64,7 @@ response
     {
         "success": true,
         "res": {
-            "code": 0,
+            "uid": "ivan",
             "hpw": "983d0b14294b49be93f637c084fd02e8"
         }
     }
@@ -47,8 +74,7 @@ or
     {
         "success": false,
         "res": {
-            "code": 1,
-            "reason" "user already exists"
+            "reason": "user already exists"
         }
     }
 
@@ -62,7 +88,7 @@ response
     {
         "success": true,
         "res": {
-            "username": "ivan",
+            "uid": "ivan",
             "email": "john.doe@example.com",
             "roles": ["admin", "mod", "pawn"]
         }
@@ -72,7 +98,9 @@ or
 
     {
         "success": false,
-        "res": {}
+        "res": {
+            "reason": "user not found"
+        }
     }
 
 ## Change user account information
@@ -88,7 +116,18 @@ response
 
     {
         "success": true,
-        "res": {}
+        "res": {
+            "uid": "ivan"
+        }
+    }
+
+or
+
+    {
+        "success": false,
+        "res": {
+            "reason": "user not found"
+        }
     }
 
 ## Delete user account information
@@ -103,7 +142,18 @@ response
 
     {
         "success": true,
-        "res": {}
+        "res": {
+            "uid": "ivan"
+        }
+    }
+
+or
+
+    {
+        "success": false,
+        "res": {
+            "reason": "user not found"
+        }
     }
 
 # TODO List

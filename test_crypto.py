@@ -1,17 +1,16 @@
-from utils import gen_hashlib as gen, enc_cryptography as crypt, misc
+import os
+from utils import gen_hashlib as gen, enc_cryptography as crypt
 
 
 if __name__ == '__main__':
-    key = crypt.Fernet.generate_key()
+
     passw = "qwerty1234"
-    salt = misc.random_str(16).encode("utf-8")
+    salt = os.urandom(16)
 
     # 1. encrypt
     hash = gen.encrypt(passw, salt)
-
-    hashed_salt = crypt.encrypt(key, salt)
+    hashed_salt_bytes = crypt.encrypt(salt)
 
     # 2. verify
-    reversed_salt = crypt.decrypt(key, hashed_salt)
-
+    reversed_salt = crypt.decrypt(hashed_salt_bytes)
     print(gen.verify(passw, reversed_salt, hash))

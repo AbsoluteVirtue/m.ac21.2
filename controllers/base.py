@@ -21,6 +21,11 @@ class Base(web.View):
                     "path": (
                         f"{self.request.scheme}://{self.request.host}{self.request.app.router['user-id'].canonical}"),
                 },
+                "authenticate_user": {
+                    "methods": ["POST"],
+                    "path": (
+                        f"{self.request.scheme}://{self.request.host}{self.request.app.router['auth'].canonical}"),
+                },
             },
         })
 
@@ -32,59 +37,119 @@ class User(web.View):
         if not username:
             raise web.HTTPBadRequest
 
-        user = await datastore.get_user(self.request.app['db'], username)
+        user = await datastore.get_user(self.request.app['db'], username, include_id=False)
+        if user:
+            user.update({"uid": username})
+
         return web.json_response({
             "success": True if user else False,
-            "res": user or {},
+            "res": user or {
+                "reason": "user not found",
+            },
         })
 
     async def post(self):
-        res = None
         form = await self.request.json()
-        if (form.get('username')
+        if not (
+            form.get('username')
             and form.get('email')
             and form.get('plaintext')
         ):
-            salt = os.urandom(256)
-            form.update({
-                "hash": gen.encrypt(form.pop('plaintext'), salt),
-                "key": crypt.encrypt(salt).decode("utf-8")
+            return web.json_response({
+                "success": False,
+                "res": {"reason": "provided user data incomplete or incorrect"},
             })
-            res = await datastore.insert_user(self.request.app['db'], **form)
+
+        salt = os.urandom(16)
+        form.update({
+            "hash": gen.encrypt(form.pop('plaintext'), salt),
+            "key": crypt.encrypt(salt)  # .decode("utf-8")
+        })
+        res = await datastore.insert_user(self.request.app['db'], **form)
 
         return web.json_response({
             "success": True if res else False,
             "res": {
-                "uid": res.inserted_id,
+                "uid": form["username"],
                 "hpw": form["hash"],
-            } if res else {},
+            } if res else {
+                "reason": "user already exists",
+            },
         })
 
     async def patch(self):
-        res = None
         form = await self.request.json()
-        if (form and form.get('username')):
-            res = await datastore.update_user(self.request.app['db'], **{
-                'username': form['username'],
-                'email': form['email'],
+        if not (form and form.get('username')):
+            return web.json_response({
+                "success": False,
+                "res": {"reason": "provided user data incomplete or incorrect"},
             })
 
+        data = {
+            'username': form['username'],
+            'email': form['email'],
+        }
+
+        if form.get('plaintext'):
+            salt = os.urandom(16)
+            data.update({
+                "hash": gen.encrypt(form.pop('plaintext'), salt),
+                "key": crypt.encrypt(salt)  # .decode("utf-8")
+            })
+
+        found, modified = await datastore.update_user(self.request.app['db'], **data)
+
         return web.json_response({
-            "success": True if res and res.modified_count else False,
+            "success": True if modified else False,
             "res": {
                 "uid": form['username'],
-            } if res and res.matched_count else {},
+            } if found else {
+                "reason": "user not found",
+            },
         })
 
     async def delete(self):
-        res = None
         form = await self.request.json()
-        if (form.get('username')):
-            res = await datastore.remove_user(self.request.app['db'], **form)
+        if not (form and form.get('username')):
+            return web.json_response({
+                "success": False,
+                "res": {"reason": "provided user data incomplete or incorrect"},
+            })
+
+        res = await datastore.remove_user(self.request.app['db'], form['username'])
 
         return web.json_response({
-            "success": True if res and res.deleted_count else False,
+            "success": True if res else False,
             "res": {
                 "uid": form['username'],
-            } if res and res.deleted_count else {},
+            } if res else {
+                "reason": "user not found",
+            },
+        })
+
+
+class Auth(web.View):
+
+    async def post(self):
+        form = await self.request.json()
+        if not (
+            form and form.get('email')
+            and form.get('plaintext')
+        ):
+            return web.json_response({
+                "success": False,
+                "res": {"reason": "provided user data incomplete or incorrect"},
+            })
+
+        user = await datastore.get_user(self.request.app['db'], email=form['email'])
+        if not user:
+            return web.json_response({
+                "success": False,
+                "res": {"reason": "user not found"},
+            })
+
+        # reversed_salt = crypt.decrypt(user['key']).encode("utf-8")
+        return web.json_response({
+            "success": gen.verify(form['plaintext'], crypt.decrypt(user['key']), user['hash']),
+            "res": {"uid": user["_id"]},
         })
