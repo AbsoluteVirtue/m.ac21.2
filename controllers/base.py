@@ -37,7 +37,7 @@ class User(web.View):
         if not username:
             raise web.HTTPBadRequest
 
-        user = await datastore.get_user(self.request.app['db'], username, include_id=False)
+        user = await datastore.get_user(self.request.app['db'], username)
         if user:
             user.update({"uid": username})
 
@@ -63,7 +63,7 @@ class User(web.View):
         salt = os.urandom(16)
         form.update({
             "hash": gen.encrypt(form.pop('plaintext'), salt),
-            "key": crypt.encrypt(salt)  # .decode("utf-8")
+            "key": crypt.encrypt(salt)
         })
         res = await datastore.insert_user(self.request.app['db'], **form)
 
@@ -94,7 +94,7 @@ class User(web.View):
             salt = os.urandom(16)
             data.update({
                 "hash": gen.encrypt(form.pop('plaintext'), salt),
-                "key": crypt.encrypt(salt)  # .decode("utf-8")
+                "key": crypt.encrypt(salt)
             })
 
         found, modified = await datastore.update_user(self.request.app['db'], **data)
@@ -141,14 +141,13 @@ class Auth(web.View):
                 "res": {"reason": "provided user data incomplete or incorrect"},
             })
 
-        user = await datastore.get_user(self.request.app['db'], email=form['email'])
+        user = await datastore.get_user(self.request.app['db'], email=form['email'], no_metadata=False)
         if not user:
             return web.json_response({
                 "success": False,
                 "res": {"reason": "user not found"},
             })
 
-        # reversed_salt = crypt.decrypt(user['key']).encode("utf-8")
         return web.json_response({
             "success": gen.verify(form['plaintext'], crypt.decrypt(user['key']), user['hash']),
             "res": {"uid": user["_id"]},

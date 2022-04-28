@@ -1,10 +1,11 @@
 from pymongo import errors
 
+# mongod --dbpath D:\\mgo\\drow
 
-async def get_user(db, username=None, email=None, include_id=True):
+async def get_user(db, username=None, email=None, no_metadata=True):
     return await db.users.find_one(
         {'email': email} if email else {'_id': username},
-        projection={'_id': include_id})
+        projection={'_id': False, 'key': False} if no_metadata else None)
 
 
 async def insert_user(db, **kwobj):

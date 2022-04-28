@@ -4,21 +4,21 @@ GET http://127.0.0.1:2022/ HTTP/1.1
 GET http://127.0.0.1:2022/user HTTP/1.1
 
 ###
-GET http://127.0.0.1:2022/user/ivan HTTP/1.1
+GET http://127.0.0.1:2022/user/test HTTP/1.1
 
 ###
 POST http://127.0.0.1:2022/user HTTP/1.1
 Accept: */*
 Content-Type: application/json
 
-{"username": "test", "email": "test@example.com"}
+{"username": "test", "email": "test@example.com", "plaintext": "123456"}
 
 ###
 PATCH http://127.0.0.1:2022/user HTTP/1.1
 Accept: */*
 Content-Type: application/json
 
-{"username": "test", "email": "test@example.com"}
+{"username": "test", "email": "test@example.com", "plaintext": "qwerty123"}
 
 ###
 DELETE http://127.0.0.1:2022/user HTTP/1.1
@@ -26,3 +26,10 @@ Accept: */*
 Content-Type: application/json
 
 {"username": "ivan"}
+
+###
+POST http://127.0.0.1:2022/auth HTTP/1.1
+Accept: */*
+Content-Type: application/json
+
+{"plaintext": "123456", "email": "test@example.com"}
