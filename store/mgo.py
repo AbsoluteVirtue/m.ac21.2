@@ -25,5 +25,6 @@ async def update_user(db, **kwobj):
         {'$set': kwobj})
     return res.matched_count, res.modified_count
 
+
 async def remove_user(db, username):
     return (await db.users.delete_one({'_id': username})).deleted_count or None

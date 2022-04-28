@@ -71,7 +71,7 @@ class User(web.View):
             "success": True if res else False,
             "res": {
                 "uid": form["username"],
-                "hpw": form["hash"],
+                "hash": form["hash"],
             } if res else {
                 "reason": "user already exists",
             },
@@ -103,6 +103,7 @@ class User(web.View):
             "success": True if modified else False,
             "res": {
                 "uid": form['username'],
+                "hash": data.get("hash", ""),
             } if found else {
                 "reason": "user not found",
             },
@@ -150,5 +151,8 @@ class Auth(web.View):
 
         return web.json_response({
             "success": gen.verify(form['plaintext'], crypt.decrypt(user['key']), user['hash']),
-            "res": {"uid": user["_id"]},
+            "res": {
+                "uid": user["_id"],
+                "hash": user["hash"],
+            },
         })

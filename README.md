@@ -35,7 +35,8 @@ response
     {
         "success": true,
         "res": {
-            "uid": "ivan"
+            "uid": "ivan",
+            "hash": "983d0b14294b49be93f637c084fd02e8"
         }
     }
 
@@ -65,7 +66,7 @@ response
         "success": true,
         "res": {
             "uid": "ivan",
-            "hpw": "983d0b14294b49be93f637c084fd02e8"
+            "hash": "983d0b14294b49be93f637c084fd02e8"
         }
     }
 
@@ -90,7 +91,8 @@ response
         "res": {
             "uid": "ivan",
             "email": "john.doe@example.com",
-            "roles": ["admin", "mod", "pawn"]
+            "hash": "983d0b14294b49be93f637c084fd02e8",
+            "roles": ["admin", "mod", "reg"]
         }
     }
 
@@ -117,7 +119,8 @@ response
     {
         "success": true,
         "res": {
-            "uid": "ivan"
+            "uid": "ivan",
+            "hash": "983d0b14294b49be93f637c084fd02e8"
         }
     }
 
