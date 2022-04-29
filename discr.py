@@ -49,6 +49,11 @@ async def make_app(config):
     return app
 
 
+def init_func(argv):
+    # python -m aiohttp.web discr:init_func
+    return make_app(get_config('./config/local.yaml'))
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process arguments.')
     parser.add_argument('--config_file', dest='config_file', default='./config/local.yaml', help='config file path')

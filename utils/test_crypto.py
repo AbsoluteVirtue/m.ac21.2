@@ -1,5 +1,5 @@
 import os
-from utils import gen_hashlib as gen, enc_cryptography as crypt
+from . import gen_hashlib as gen, enc_cryptography as crypt
 
 
 if __name__ == '__main__':
