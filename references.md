@@ -103,5 +103,68 @@ where: -f "force stop"
 --no-trunc is optional
 
 # Testing
-curl -d '{"username":"value1", "email":"value2"}' -H "Content-Type: application/json" -X POST http://localhost:2022/u
-ser
+curl -d '{"username":"value1", "email":"value2"}' -H "Content-Type: application/json" -X POST http://localhost:2022/user
+
+# MongoDB
+1. Register mongodb repo
+
+    wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+
+or prereq: sudo apt-get install gnupg
+
+2. Create Ubuntu list file
+
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+
+3. Reload system package database
+
+    sudo apt-get update
+
+4. Install 
+
+    sudo apt-get install -y mongodb-org
+
+5. Run service
+
+check system init process: ps --no-headers -o comm 1 
+
+    sudo systemctl start mongod
+
+in case of error reload service: sudo systemctl daemon-reload
+
+check status: sudo systemctl status mongod
+
+6. Stop service
+
+    sudo systemctl stop mongod
+
+7. Restart service
+
+    sudo systemctl restart mongod
+
+8. Mongo shell
+https://www.mongodb.com/docs/mongodb-shell/run-commands/
+
+    mongosh
+
+ equivalent to: mongosh "mongodb://localhost:27017"
+
+ To specify port:
+
+    mongosh --port 28015
+
+To connect remotely:
+
+    mongosh "mongodb://mongodb0.example.com:28015"
+
+or
+
+    mongosh --host mongodb0.example.com --port 28015
+
+Authentication:
+
+    mongosh "mongodb://mongodb0.example.com:28015" --username alice --authenticationDatabase admin
+
+Create DB:
+
+    use pis_auth

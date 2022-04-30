@@ -1,5 +1,6 @@
 aiohttp
 aioauth
 cryptography
+pymongo>3,<4
 motor
 PyYAML
