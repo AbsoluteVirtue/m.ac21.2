@@ -22,4 +22,4 @@ EXPOSE 2022
 RUN adduser -u 2022 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-ENTRYPOINT ["/bin/sh", "-c" , "python -m aiohttp.web --port 2022 discr:main --config_file ./config/local.yaml"]
+ENTRYPOINT ["/bin/sh", "-c" , "python -m aiohttp.web --host 0.0.0.0 --port 2022 discr:main --config_file ./config/local.yaml"]

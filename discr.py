@@ -13,7 +13,7 @@ async def setup_mongo(app, loop):
     mgo = aiomotor.AsyncIOMotorClient(
         io_loop=loop, **app['config']['mongo']['kwargs'])[app['config']['mongo']['db']]
 
-    async def close_mongo():
+    async def close_mongo(arg):
         mgo.client.close()
 
     app.on_cleanup.append(close_mongo)
@@ -50,7 +50,7 @@ async def make_app(config):
 
 
 def main(argv):
-    # python -m aiohttp.web --port 2022 discr:main --config_file "./config/local.yaml"
+    # python -m aiohttp.web --host 0.0.0.0 --port 2022 discr:main --config_file ./config/local.yaml
 
     _parser = argparse.ArgumentParser(description='Process arguments.')
     _parser.add_argument('--config_file', dest='config_file', default='./config/local.yaml', help='config file path')
